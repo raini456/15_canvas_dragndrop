@@ -29,11 +29,11 @@
       e.preventDefault();       
     };    
     var drop = function(e){
-        var width=150;
-        var height=150;
-        var posX=e.offsetX-savedObject.offsetX;       
-        var posY=e.offsetY-savedObject.offsetY;
-        ctx.drawImage(savedObject, posX, posY, width, height);
+//        var width=150;
+//        var height=150;
+        var posX=e.offsetX-savedObject.offsetX+1;       
+        var posY=e.offsetY-savedObject.offsetY-1;
+        ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
     };
     
     var initCanvas = function (img) {
