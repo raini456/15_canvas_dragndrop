@@ -73,7 +73,7 @@
         ctx.fillStyle=canvasFont.color; 
         console.log(canvasFont);
         var posX=e.offsetX-T.x;                       
-        var posY=e.offsetY - T.y + fontSize;             
+        var posY=e.offsetY - T.y + canvasFont.size;             
         ctx.fillText(T.text, posX, posY);
         }
         else if(flag===1){
@@ -81,17 +81,7 @@
              posY=e.offsetY-savedObject.offsetY-1;
               ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
         }
-    };
-    /*var dropText = function(e){          
-//      Object aus JSON 
-        var T=JSON.parse(e.dataTransfer.getData("text"));        
-        ctx.font="40px arial";
-        ctx.fillStyle='red';
-        var fontSize = parseInt(ctx.font);
-        var posX=e.offsetX-T.x;                       
-        var posY=e.offsetY - T.y + fontSize;             
-        ctx.fillText(T.text, posX, posY);
-    }*/
+    };    
     var setThumbsDraggable = function(){        
         addEv('[data-role="icons"] > img', 'dragstart', drag);
     };
@@ -112,13 +102,6 @@
     var dragover = function(e){        
       e.preventDefault();       
     };    
-    /*var drop = function(e){
-        var posX=e.offsetX-savedObject.offsetX+1;       
-        var posY=e.offsetY-savedObject.offsetY-1;
-        ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
-    };
-    */
-    
     var initCanvas = function (img) {
         var h = img.height*maxWidth/img.width;
         canvas = document.querySelector('canvas');
