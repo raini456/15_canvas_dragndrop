@@ -1,9 +1,14 @@
 (function () {
-    var canvas, ctx;
+    var canvas, ctx, flag;
     var bgImg = "assets/images/T-shirt-Vector.jpg";
     var maxWidth= 900;
     var savedObject = new Image();
-    var inputX, inputY;
+    var fontSize, fontFamily, fontColor;
+    var canvasFont={
+        size:16,
+        family:'arial',
+        color:'block'
+    }
     
     var init = function () {  
         preloadImage(bgImg, initCanvas);  //Funktionen können wie Variablen übergeben werden initThumbs();
@@ -11,15 +16,43 @@
         setCanvasDroppable();   
         setTextDraggable();
         setCanvastextDroppable();
+        initFontOptions(10,70,5);        
     };
+    var initFontOptions = function(min, max, steps){
+        fontSize=document.querySelector('[name="fontSize"]');
+        fontFamily=document.querySelector('[name="fontFamily"]');
+        fontColor=document.querySelector('[name="fontColor"]');
+        for (var i = min; i <= max; i += steps) {
+            var opt = document.createElement('option');
+            opt.text = i + 'px';
+            opt.value = i;
+            fontSize.appendChild(opt);
+        }
+        addEv('[name="fontSize"]', 'change', changeFontSize);
+        addEv('[name="fontFamily"]', 'change', changeFontFamily);
+        addEv('[name="fontColor"]', 'change', changeFontColor);        
+    }
+    var changeFontSize = function(){
+        document.querySelector('[data-role="text"]').style.fontSize = this.value+'px';
+        canvasFont.size = this.value * 1;
+    }
+    var changeFontFamily = function(){
+        document.querySelector('[data-role="text"]').style.fontFamily = this.value;
+        canvasFont.family=this.value;
+    }
+    var changeFontColor = function(){
+        document.querySelector('[data-role="text"]').style.color = this.value;
+        canvasFont.color=this.value;
+    }
     var setTextDraggable = function(){        
         addEv('[data-role="text"]', 'dragstart', dragText);
         addEv('[data-role="text"]', 'dragover', dragOverText);
     };
     var setCanvastextDroppable = function(){
-        addEv('canvas', 'drop', dropText);
+        addEv('canvas', 'drop', drop);
     };
-    var dragText = function(e){        
+    var dragText = function(e){  
+        flag=0;
         var T = {
             x:e.offsetX,
             y:e.offsetY,
@@ -31,16 +64,34 @@
     var dragOverText = function(e){
         e.preventDefault();
     }
-    var dropText = function(e){          
-//        console.log(e.dataTransfer.getData("text"));
+    var drop = function(e){
+        var posX, posY;
+        // Object aus JSON auslesen        
+        if(flag===0){
+        var T=JSON.parse(e.dataTransfer.getData("text"));       
+        ctx.font=canvasFont.size + 'px ' + canvasFont.family;
+        ctx.fillStyle=canvasFont.color; 
+        console.log(canvasFont);
+        var posX=e.offsetX-T.x;                       
+        var posY=e.offsetY - T.y + fontSize;             
+        ctx.fillText(T.text, posX, posY);
+        }
+        else if(flag===1){
+             posX=e.offsetX-savedObject.offsetX+1;       
+             posY=e.offsetY-savedObject.offsetY-1;
+              ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
+        }
+    };
+    /*var dropText = function(e){          
+//      Object aus JSON 
         var T=JSON.parse(e.dataTransfer.getData("text"));        
-        ctx.font="30px arial";
+        ctx.font="40px arial";
         ctx.fillStyle='red';
-        var posX=e.offsetX-T.x;  
-        var diffY=40-T.y;             
-        var posY=e.offsetY - diffY;             
-        ctx.fillText(T.text,posX,posY);
-    }
+        var fontSize = parseInt(ctx.font);
+        var posX=e.offsetX-T.x;                       
+        var posY=e.offsetY - T.y + fontSize;             
+        ctx.fillText(T.text, posX, posY);
+    }*/
     var setThumbsDraggable = function(){        
         addEv('[data-role="icons"] > img', 'dragstart', drag);
     };
@@ -48,7 +99,8 @@
         addEv('canvas', 'dragover', dragover);
         addEv('canvas', 'drop', drop);
     };
-    var drag = function(e){        
+    var drag = function(e){ 
+      flag=1;
       console.log('dragstart');       
       console.log(e);
       savedObject = this;      
@@ -60,11 +112,12 @@
     var dragover = function(e){        
       e.preventDefault();       
     };    
-    var drop = function(e){
+    /*var drop = function(e){
         var posX=e.offsetX-savedObject.offsetX+1;       
         var posY=e.offsetY-savedObject.offsetY-1;
         ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
     };
+    */
     
     var initCanvas = function (img) {
         var h = img.height*maxWidth/img.width;

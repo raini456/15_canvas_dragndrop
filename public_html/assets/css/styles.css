@@ -28,7 +28,14 @@ canvas {
     margin:4% auto;
     padding:5px;
     justify-content:center;
-    width:25%;
-    height:40px;
+    width:25%;    
     cursor:pointer;
+    font:40px arial;
+    outline:none;
+}
+[data-role="textOptions"]{
+    display:flex;
+    justify-content: space-between;
+    width:400px;
+    margin:20px auto;
 }
