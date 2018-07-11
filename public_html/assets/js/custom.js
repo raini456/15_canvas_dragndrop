@@ -3,12 +3,44 @@
     var bgImg = "assets/images/T-shirt-Vector.jpg";
     var maxWidth= 900;
     var savedObject = new Image();
+    var inputX, inputY;
     
     var init = function () {  
         preloadImage(bgImg, initCanvas);  //Funktionen können wie Variablen übergeben werden initThumbs();
         setThumbsDraggable();   
-        setCanvasDroppable();        
+        setCanvasDroppable();   
+        setTextDraggable();
+        setCanvastextDroppable();
     };
+    var setTextDraggable = function(){        
+        addEv('[data-role="text"]', 'dragstart', dragText);
+        addEv('[data-role="text"]', 'dragover', dragOverText);
+    };
+    var setCanvastextDroppable = function(){
+        addEv('canvas', 'drop', dropText);
+    };
+    var dragText = function(e){        
+        var T = {
+            x:e.offsetX,
+            y:e.offsetY,
+            text: this.innerText
+        }
+        var tJson = JSON.stringify(T);
+        e.dataTransfer.setData("text/plain", tJson);
+    }
+    var dragOverText = function(e){
+        e.preventDefault();
+    }
+    var dropText = function(e){          
+//        console.log(e.dataTransfer.getData("text"));
+        var T=JSON.parse(e.dataTransfer.getData("text"));        
+        ctx.font="30px arial";
+        ctx.fillStyle='red';
+        var posX=e.offsetX-T.x;  
+        var diffY=40-T.y;             
+        var posY=e.offsetY - diffY;             
+        ctx.fillText(T.text,posX,posY);
+    }
     var setThumbsDraggable = function(){        
         addEv('[data-role="icons"] > img', 'dragstart', drag);
     };
@@ -29,8 +61,6 @@
       e.preventDefault();       
     };    
     var drop = function(e){
-//        var width=150;
-//        var height=150;
         var posX=e.offsetX-savedObject.offsetX+1;       
         var posY=e.offsetY-savedObject.offsetY-1;
         ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
