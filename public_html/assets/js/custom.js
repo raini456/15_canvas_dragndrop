@@ -68,6 +68,7 @@
         var posX, posY;
         // Object aus JSON auslesen        
         if(flag===0){
+        //Bild
         var T=JSON.parse(e.dataTransfer.getData("text"));       
         ctx.font=canvasFont.size + 'px ' + canvasFont.family;
         ctx.fillStyle=canvasFont.color; 
@@ -77,6 +78,7 @@
         ctx.fillText(T.text, posX, posY);
         }
         else if(flag===1){
+        //Text
              posX=e.offsetX-savedObject.offsetX+1;       
              posY=e.offsetY-savedObject.offsetY-1;
               ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
