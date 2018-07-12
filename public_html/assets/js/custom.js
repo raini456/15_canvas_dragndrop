@@ -1,5 +1,5 @@
 (function () {
-    var canvas, ctx, flag;
+    var canvas, ctx, dragType = null;
     var bgImg = "assets/images/T-shirt-Vector.jpg";
     var maxWidth= 900;
     var savedObject = new Image();
@@ -14,8 +14,7 @@
         preloadImage(bgImg, initCanvas);  //Funktionen können wie Variablen übergeben werden initThumbs();
         setThumbsDraggable();   
         setCanvasDroppable();   
-        setTextDraggable();
-        setCanvastextDroppable();
+        setTextDraggable();        
         initFontOptions(10,70,5);        
     };
     var initFontOptions = function(min, max, steps){
@@ -45,14 +44,10 @@
         canvasFont.color=this.value;
     }
     var setTextDraggable = function(){        
-        addEv('[data-role="text"]', 'dragstart', dragText);
-        addEv('[data-role="text"]', 'dragover', dragOverText);
-    };
-    var setCanvastextDroppable = function(){
-        addEv('canvas', 'drop', drop);
-    };
+        addEv('[data-role="text"]', 'dragstart', dragText);        
+    };    
     var dragText = function(e){  
-        flag=0;
+        dragType="text";
         var T = {
             x:e.offsetX,
             y:e.offsetY,
@@ -61,38 +56,38 @@
         var tJson = JSON.stringify(T);
         e.dataTransfer.setData("text/plain", tJson);
     }
-    var dragOverText = function(e){
-        e.preventDefault();
-    }
     var drop = function(e){
         var posX, posY;
         // Object aus JSON auslesen        
-        if(flag===0){
-        //Bild
-        var T=JSON.parse(e.dataTransfer.getData("text"));       
-        ctx.font=canvasFont.size + 'px ' + canvasFont.family;
-        ctx.fillStyle=canvasFont.color; 
-        console.log(canvasFont);
-        var posX=e.offsetX-T.x;                       
-        var posY=e.offsetY - T.y + canvasFont.size;             
-        ctx.fillText(T.text, posX, posY);
-        }
-        else if(flag===1){
-        //Text
-             posX=e.offsetX-savedObject.offsetX+1;       
-             posY=e.offsetY-savedObject.offsetY-1;
-              ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);
-        }
+        switch(dragType){
+            case null:
+              return false;
+              break;
+            case "text":
+              var T=JSON.parse(e.dataTransfer.getData("text"));       
+              ctx.font=canvasFont.size + 'px ' + canvasFont.family;
+              ctx.fillStyle=canvasFont.color; 
+              ctx.fillText(T.text, e.offsetX-T.x, e.offsetY - T.y + canvasFont.size);  
+              break;
+            case "image":
+                //Bild
+              posX=e.offsetX-savedObject.offsetX+1;       
+              posY=e.offsetY-savedObject.offsetY-1;
+              ctx.drawImage(savedObject, posX, posY, savedObject.width, savedObject.height);  
+              break;
+          default: 
+              return false;
+        }      
     };    
     var setThumbsDraggable = function(){        
-        addEv('[data-role="icons"] > img', 'dragstart', drag);
+        addEv('[data-role="icons"] > img', 'dragstart', dragImage);
     };
     var setCanvasDroppable = function(){
         addEv('canvas', 'dragover', dragover);
         addEv('canvas', 'drop', drop);
     };
-    var drag = function(e){ 
-      flag=1;
+    var dragImage = function(e){ 
+      dragType="image";
       console.log('dragstart');       
       console.log(e);
       savedObject = this;      
